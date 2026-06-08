@@ -27,6 +27,13 @@ YMusic/
 YMusProg/Server/
 YMusProg/Site/
 
+# Лишние README (оставляем только MacOS/README.md с инструкцией по сборке)
+YMusProg/README.md
+YMusProg/Windows/App/README.md
+YMusProg/Windows/NativeApp/README.md
+YMusProg/Windows/QtApp/README.md
+YMusProg/Windows/Release/README.md
+
 # Скриншоты/проверочные картинки в корне
 qtapp_*.png
 YMusUpd.png

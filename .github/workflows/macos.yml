@@ -1,0 +1,83 @@
+name: Build macOS (.dmg)
+
+# Сборка YMus под macOS на облачном Apple Silicon (бесплатно для public-репозитория).
+# Запуск: вкладка Actions на GitHub → "Build macOS (.dmg)" → Run workflow.
+# Результат: артефакт YMus-macos (.dmg) — скачивается из этого же запуска.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - "YMusProg/MacOS/**"
+      - "src/**"
+      - ".github/workflows/macos.yml"
+
+jobs:
+  build:
+    runs-on: macos-14          # Apple Silicon (arm64): подходит для M1–M4
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── 1. Собрать само расширение (для офлайн-фолбэка внутри программы) ──
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build extension
+        run: |
+          npm ci
+          npm run build
+          # build.mjs кладёт распакованное расширение в папку YMus/
+          test -f YMus/manifest.json || (echo "Extension build missing manifest" && exit 1)
+
+      # ── 2. Python + зависимости сборки ──
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "PySide6==6.7.*" pyinstaller
+
+      # ── 3. Иконка .icns из PNG ──
+      - name: Make icon
+        run: |
+          sips -s format icns "YMusProg/Windows/QtApp/assets/app/Icon128x128.png" --out "ymus.icns" || true
+
+      # ── 4. Сборка .app через PyInstaller ──
+      - name: Build .app
+        run: |
+          ICON_ARG=""
+          if [ -f ymus.icns ]; then ICON_ARG="--icon ymus.icns"; fi
+          pyinstaller --noconfirm --windowed --name YMus \
+            $ICON_ARG \
+            --paths "YMusProg/MacOS/QtApp" \
+            --add-data "YMusProg/Windows/QtApp/qml:qml" \
+            --add-data "YMusProg/Windows/QtApp/assets:assets" \
+            --add-data "YMus:Extension" \
+            --osx-bundle-identifier "tech.ymus.app" \
+            "YMusProg/MacOS/QtApp/main.py"
+          test -d "dist/YMus.app" || (echo ".app not produced" && exit 1)
+
+      # ── 5. Упаковка в .dmg ──
+      - name: Make .dmg
+        run: |
+          mkdir -p dmgroot
+          cp -R "dist/YMus.app" dmgroot/
+          ln -s /Applications dmgroot/Applications
+          hdiutil create -volname "YMus" -srcfolder dmgroot -ov -format UDZO "YMus.dmg"
+
+      # ── 6. Публикация артефакта ──
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: YMus-macos
+          path: YMus.dmg
+          if-no-files-found: error
