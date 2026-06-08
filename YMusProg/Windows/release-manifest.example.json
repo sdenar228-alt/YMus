@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "channel": "stable",
+  "publishedAt": "2026-06-04T12:00:00Z",
+  "latestVersion": "1.1.2",
+  "minimumAppVersion": "0.1.0",
+  "releaseNotesUrl": "https://updates.example.com/ymus/releases/1.1.2.html",
+  "artifacts": {
+    "chromiumUnpacked": {
+      "url": "https://updates.example.com/ymus/1.1.2/ymus-chromium.zip",
+      "sha256": "REPLACE_WITH_SHA256",
+      "size": 1234567
+    },
+    "firefoxXpi": {
+      "url": "https://updates.example.com/ymus/1.1.2/ymus-firefox.xpi",
+      "sha256": "REPLACE_WITH_SHA256",
+      "size": 1234567
+    }
+  },
+  "storeUrls": {
+    "chrome": "https://chromewebstore.google.com/detail/REPLACE_WITH_EXTENSION_ID",
+    "edge": "https://microsoftedge.microsoft.com/addons/detail/REPLACE_WITH_EXTENSION_ID",
+    "firefox": "https://addons.mozilla.org/firefox/addon/REPLACE_WITH_SLUG"
+  },
+  "signature": "REPLACE_WITH_ED25519_SIGNATURE"
+}
+

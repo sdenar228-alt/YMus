@@ -1,0 +1,389 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:YMus.Native.ViewModels"
+        xmlns:models="using:YMus.Native.Models"
+        xmlns:converters="using:YMus.Native.Converters"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="YMus.Native.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Width="1248"
+        Height="704"
+        MinWidth="1080"
+        MinHeight="650"
+        WindowStartupLocation="CenterScreen"
+        ShowActivated="True"
+        WindowDecorations="None"
+        Background="#070707"
+        Icon="/Assets/ymus.ico"
+        Title="YMus">
+
+    <Window.Resources>
+        <converters:BrowserIconConverter x:Key="BrowserIconConverter"/>
+    </Window.Resources>
+
+    <Window.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="#F4F1E8"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+        </Style>
+        <Style Selector="TextBlock.muted">
+            <Setter Property="Foreground" Value="#A8A8A8"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+        <Style Selector="TextBlock.kicker">
+            <Setter Property="Foreground" Value="#FFD400"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+        <Style Selector="Border.panel">
+            <Setter Property="CornerRadius" Value="9"/>
+            <Setter Property="Background" Value="#B20F0F0F"/>
+            <Setter Property="BorderBrush" Value="#263A3A3A"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        <Style Selector="Button">
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Padding" Value="14,8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#2BFFFFFF"/>
+            <Setter Property="Background" Value="#141A1A1A"/>
+            <Setter Property="Foreground" Value="#F4F1E8"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border CornerRadius="{TemplateBinding CornerRadius}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Padding="{TemplateBinding Padding}"
+                                          RecognizesAccessKey="True"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="Button:pointerover">
+            <Setter Property="BorderBrush" Value="#66FFD400"/>
+            <Setter Property="Background" Value="#20211912"/>
+        </Style>
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#FFD400"/>
+            <Setter Property="BorderBrush" Value="#FFE66A"/>
+            <Setter Property="Foreground" Value="#090909"/>
+            <Setter Property="Padding" Value="22,11"/>
+        </Style>
+        <Style Selector="Button.primary:pointerover">
+            <Setter Property="Background" Value="#FFE45C"/>
+        </Style>
+        <Style Selector="Button.nav">
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#B6B6B6"/>
+            <Setter Property="Padding" Value="16,13"/>
+        </Style>
+        <Style Selector="Button.nav:pointerover">
+            <Setter Property="Background" Value="#101C1A08"/>
+            <Setter Property="BorderBrush" Value="#20FFD400"/>
+            <Setter Property="Foreground" Value="#F4F1E8"/>
+        </Style>
+        <Style Selector="Button.nav.active">
+            <Setter Property="Background" Value="#29261A05"/>
+            <Setter Property="BorderBrush" Value="#66FFD400"/>
+            <Setter Property="Foreground" Value="#FFD400"/>
+        </Style>
+        <Style Selector="ToggleSwitch">
+            <Setter Property="OnContent" Value=""/>
+            <Setter Property="OffContent" Value=""/>
+        </Style>
+        <Style Selector="ComboBox, TextBox">
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Background" Value="#141414"/>
+            <Setter Property="BorderBrush" Value="#3B3B2C"/>
+            <Setter Property="Foreground" Value="#F4F1E8"/>
+            <Setter Property="Padding" Value="10,7"/>
+        </Style>
+    </Window.Styles>
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Grid>
+        <Grid.Background>
+            <RadialGradientBrush Center="0.48,0.12" RadiusX="0.95" RadiusY="1">
+                <GradientStop Color="#1A1707" Offset="0"/>
+                <GradientStop Color="#080808" Offset="0.55"/>
+                <GradientStop Color="#050505" Offset="1"/>
+            </RadialGradientBrush>
+        </Grid.Background>
+
+        <Canvas x:Name="AnimatedBackground" IsHitTestVisible="False" Opacity="0.72" ClipToBounds="True">
+            <Canvas.RenderTransform>
+                <TranslateTransform/>
+            </Canvas.RenderTransform>
+            <Path Stroke="#14FFD400" StrokeThickness="1" Data="M-90,160 L1310,160 M-90,248 L1310,248 M-90,336 L1310,336 M-90,424 L1310,424 M-90,512 L1310,512 M-90,600 L1310,600"/>
+            <Path Stroke="#10FFD400" StrokeThickness="1" Data="M180,-120 L-80,760 M420,-120 L160,760 M660,-120 L400,760 M900,-120 L640,760 M1140,-120 L880,760 M1380,-120 L1120,760"/>
+            <Ellipse x:Name="GlowOne" Width="360" Height="360" Canvas.Left="-120" Canvas.Top="440" Fill="#12FFD400"/>
+            <Ellipse x:Name="GlowTwo" Width="420" Height="420" Canvas.Left="920" Canvas.Top="-180" Fill="#10FFD400"/>
+        </Canvas>
+
+        <Border Height="2" VerticalAlignment="Top" Background="#FFD400"/>
+
+        <Grid ColumnDefinitions="216,*">
+            <Border Background="#900A0A0A" BorderBrush="#25333333" BorderThickness="0,0,1,0">
+                <Grid RowDefinitions="68,*,180">
+                    <StackPanel Orientation="Horizontal" Spacing="12" Margin="22,18,16,0">
+                        <Border Width="38" Height="38" CornerRadius="19" Background="#FFD400">
+                            <Image Source="/Assets/ymus.png" Width="29" Height="29"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel>
+                            <TextBlock Text="YMus" FontSize="20" FontWeight="Bold"/>
+                            <TextBlock Text="Менеджер расширения" Classes="muted"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Margin="22,36,16,0" Spacing="12">
+                        <Button Classes="nav" Command="{Binding SelectPageCommand}" CommandParameter="Обзор">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock Text="⌂" FontSize="18"/>
+                                <TextBlock Text="Обзор" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="nav" Command="{Binding SelectPageCommand}" CommandParameter="Браузеры">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock Text="◎" FontSize="18"/>
+                                <TextBlock Text="Браузеры" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="nav active" Command="{Binding SelectPageCommand}" CommandParameter="Настройки">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock Text="⚙" FontSize="17"/>
+                                <TextBlock Text="Настройки" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="nav" Command="{Binding SelectPageCommand}" CommandParameter="Журнал">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock Text="☷" FontSize="17"/>
+                                <TextBlock Text="Журнал" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <Grid Grid.Row="2" Margin="36,0,36,28">
+                        <Ellipse Width="128" Height="38" Fill="#15FFD400" VerticalAlignment="Bottom"/>
+                        <Ellipse Width="78" Height="22" Stroke="#66FFD400" StrokeThickness="1" VerticalAlignment="Bottom" Margin="0,0,0,15"/>
+                        <Border Width="54" Height="54" CornerRadius="12" BorderBrush="#CCFFD400" BorderThickness="2" Background="#181A1402" VerticalAlignment="Bottom" Margin="0,0,0,50">
+                            <TextBlock Text="▣" Foreground="#FFD400" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Column="1" RowDefinitions="68,*">
+                <Border x:Name="TopBar" Opacity="0" BorderBrush="#202F2F2F" BorderThickness="0,0,0,1" Background="#660B0B0B" PointerPressed="TopBar_PointerPressed">
+                    <Border.Transitions>
+                        <Transitions>
+                            <DoubleTransition Property="Opacity" Duration="0:0:0.35"/>
+                        </Transitions>
+                    </Border.Transitions>
+                    <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto,Auto,Auto" Margin="30,0,22,0" ColumnSpacing="14">
+                        <Border CornerRadius="8" Background="#10161616" BorderBrush="#253A3A3A" BorderThickness="1" Padding="12,6" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding VersionLabel}" Classes="muted"/>
+                        </Border>
+                        <Border Grid.Column="1" CornerRadius="8" Background="#10161616" BorderBrush="#253A3A3A" BorderThickness="1" Padding="12,6" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Ellipse Width="7" Height="7" Fill="#54D85C" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Status}" Classes="muted"/>
+                            </StackPanel>
+                        </Border>
+                        <Button Grid.Column="3" Content="⟳  Проверить обновления" Command="{Binding CheckUpdatesCommand}" Foreground="#FFD400" BorderBrush="#55604400"/>
+                        <Button Grid.Column="4" Content="⚙" Width="38" Padding="0"/>
+                        <Border Grid.Column="5" Width="1" Height="30" Background="#24333333" VerticalAlignment="Center"/>
+                        <Button Grid.Column="6" Content="−" Width="34" Padding="0" Click="MinimizeButton_Click"/>
+                        <Button Grid.Column="7" Content="□" Width="34" Padding="0" Click="MaximizeButton_Click"/>
+                        <Button Grid.Column="8" Content="×" Width="34" Padding="0" Click="CloseButton_Click"/>
+                    </Grid>
+                </Border>
+
+                <Grid x:Name="MainContent" Opacity="0" Grid.Row="1" ColumnDefinitions="*,296" ColumnSpacing="18" Margin="30,22,30,24">
+                    <Grid.Transitions>
+                        <Transitions>
+                            <DoubleTransition Property="Opacity" Duration="0:0:0.5"/>
+                        </Transitions>
+                    </Grid.Transitions>
+
+                    <Grid RowDefinitions="Auto,*,66" RowSpacing="18">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Настройки" FontSize="28" FontWeight="Bold"/>
+                            <TextBlock Text="Управление установкой, обновлениями и поведением программы." Classes="muted"/>
+                        </StackPanel>
+
+                        <Border Grid.Row="1" Classes="panel" Padding="14">
+                            <Grid RowDefinitions="46,46,46,46,46,46,46,46,46">
+                                <Grid ColumnDefinitions="38,*,Auto" Row="0">
+                                    <Border Width="28" Height="28" CornerRadius="5" BorderBrush="#4A4430" BorderThickness="1" Background="#131308">
+                                        <TextBlock Text="⟳" Foreground="#FFD400" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="Автоматически обновлять расширение" VerticalAlignment="Center"/>
+                                    <ToggleSwitch Grid.Column="2" IsChecked="{Binding AutoUpdateExtension}" VerticalAlignment="Center"/>
+                                </Grid>
+                                <Grid Grid.Row="1" ColumnDefinitions="38,*,Auto">
+                                    <Border Width="28" Height="28" CornerRadius="5" BorderBrush="#4A4430" BorderThickness="1" Background="#131308">
+                                        <TextBlock Text="⌕" Foreground="#FFD400" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="Проверять обновления при запуске" VerticalAlignment="Center"/>
+                                    <ToggleSwitch Grid.Column="2" IsChecked="{Binding CheckUpdatesOnStart}" VerticalAlignment="Center"/>
+                                </Grid>
+                                <Grid Grid.Row="2" ColumnDefinitions="38,*,Auto">
+                                    <Border Width="28" Height="28" CornerRadius="5" BorderBrush="#4A4430" BorderThickness="1" Background="#131308">
+                                        <TextBlock Text="⏻" Foreground="#FFD400" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="Запускать YMus вместе с системой" VerticalAlignment="Center"/>
+                                    <ToggleSwitch Grid.Column="2" IsChecked="{Binding StartWithSystem}" VerticalAlignment="Center"/>
+                                </Grid>
+                                <Grid Grid.Row="3" ColumnDefinitions="38,*,Auto">
+                                    <Border Width="28" Height="28" CornerRadius="5" BorderBrush="#4A4430" BorderThickness="1" Background="#131308">
+                                        <TextBlock Text="⌄" Foreground="#FFD400" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="Сворачивать в трей" VerticalAlignment="Center"/>
+                                    <ToggleSwitch Grid.Column="2" IsChecked="{Binding MinimizeToTray}" VerticalAlignment="Center"/>
+                                </Grid>
+                                <Grid Grid.Row="4" ColumnDefinitions="38,*,Auto">
+                                    <Border Width="28" Height="28" CornerRadius="5" BorderBrush="#4A4430" BorderThickness="1" Background="#131308">
+                                        <TextBlock Text="♢" Foreground="#FFD400" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="Показывать уведомления об обновлениях" VerticalAlignment="Center"/>
+                                    <ToggleSwitch Grid.Column="2" IsChecked="{Binding ShowUpdateNotifications}" VerticalAlignment="Center"/>
+                                </Grid>
+                                <Grid Grid.Row="5" ColumnDefinitions="38,*,220">
+                                    <Border Width="28" Height="28" CornerRadius="5" BorderBrush="#4A4430" BorderThickness="1" Background="#131308">
+                                        <TextBlock Text="◌" Foreground="#FFD400" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="Тема интерфейса" VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Column="2" SelectedItem="{Binding Theme}">
+                                        <ComboBoxItem Content="Темная"/>
+                                        <ComboBoxItem Content="Системная"/>
+                                    </ComboBox>
+                                </Grid>
+                                <Grid Grid.Row="6" ColumnDefinitions="38,*,220">
+                                    <Border Width="28" Height="28" CornerRadius="5" BorderBrush="#4A4430" BorderThickness="1" Background="#131308">
+                                        <TextBlock Text="◎" Foreground="#FFD400" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="Язык интерфейса" VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Column="2" SelectedItem="{Binding Language}">
+                                        <ComboBoxItem Content="Русский"/>
+                                        <ComboBoxItem Content="English"/>
+                                    </ComboBox>
+                                </Grid>
+                                <Grid Grid.Row="7" ColumnDefinitions="38,*,210,92">
+                                    <Border Width="28" Height="28" CornerRadius="5" BorderBrush="#4A4430" BorderThickness="1" Background="#131308">
+                                        <TextBlock Text="▭" Foreground="#FFD400" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="Папка расширения" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="2" Text="{Binding ExtensionFolderDisplay}" IsReadOnly="True"/>
+                                    <Button Grid.Column="3" Content="Изменить" Margin="8,0,0,0" Command="{Binding OpenPreparedFolderCommand}" Foreground="#FFD400"/>
+                                </Grid>
+                                <Grid Grid.Row="8" ColumnDefinitions="38,*,150,104">
+                                    <Border Width="28" Height="28" CornerRadius="5" BorderBrush="#4A4430" BorderThickness="1" Background="#131308">
+                                        <TextBlock Text="↺" Foreground="#FFD400" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="Резервное копирование настроек" VerticalAlignment="Center"/>
+                                    <Button Grid.Column="2" Content="Создать копию" Command="{Binding CreateBackupCommand}" Foreground="#FFD400"/>
+                                    <Button Grid.Column="3" Content="Сбросить" Margin="8,0,0,0" Command="{Binding ResetSettingsCommand}"/>
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Row="2" Classes="panel" Padding="18,14">
+                            <Grid ColumnDefinitions="220,160,*">
+                                <Button Classes="primary" Content="▣  Сохранить изменения" Command="{Binding SaveSettingsCommand}"/>
+                                <Button Grid.Column="1" Content="×  Отменить" Margin="18,0,0,0"/>
+                                <TextBlock Grid.Column="2" Text="{Binding Status}" Classes="muted" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Column="1" RowDefinitions="Auto,*" RowSpacing="16">
+                        <Border Classes="panel" Padding="16">
+                            <Grid RowDefinitions="Auto,*">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Интеграция с браузерами" FontSize="16" FontWeight="Bold"/>
+                                    <TextBlock Text="Состояние подключения расширения" Classes="muted"/>
+                                </StackPanel>
+                                <ItemsControl Grid.Row="1" Margin="0,16,0,0" ItemsSource="{Binding Browsers}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:BrowserItem">
+                                            <Border CornerRadius="8" BorderBrush="#24383838" BorderThickness="1" Background="#10141414" Padding="12" Margin="0,0,0,10">
+                                                <Grid ColumnDefinitions="42,*,Auto">
+                                                    <Border Width="36" Height="36" CornerRadius="8" Background="#202020">
+                                                        <Image Source="{Binding Id, Converter={StaticResource BrowserIconConverter}}" Width="28" Height="28"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                                            <Ellipse Width="6" Height="6" Fill="{Binding ConnectionBrush}" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding ConnectionStatus}" Classes="muted" Foreground="{Binding ConnectionBrush}"/>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Column="2" Text="›" FontSize="22" Foreground="#A8A8A8" VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Row="1" Classes="panel" Padding="16">
+                            <Grid RowDefinitions="Auto,*,Auto">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Журнал" FontSize="16" FontWeight="Bold"/>
+                                    <TextBlock Text="Последние действия программы" Classes="muted"/>
+                                </StackPanel>
+                                <ScrollViewer Grid.Row="1" Margin="0,14,0,0" VerticalScrollBarVisibility="Auto">
+                                    <ItemsControl ItemsSource="{Binding Logs}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="models:ActivityLogItem">
+                                                <Grid ColumnDefinitions="54,56,*" Margin="0,0,0,8">
+                                                    <TextBlock Text="{Binding Stamp}" Classes="muted"/>
+                                                    <TextBlock Grid.Column="1" Text="{Binding Level}" Foreground="#FFD400" FontSize="10" FontWeight="Bold"/>
+                                                    <TextBlock Grid.Column="2" Text="{Binding Message}" Classes="muted" TextWrapping="Wrap"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                                <Button Grid.Row="2" Content="Управление браузерами  ↗" Command="{Binding InstallExtensionCommand}" HorizontalAlignment="Stretch" Foreground="#FFD400"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+
+        <Border x:Name="StartupOverlay" Opacity="1" ZIndex="20" Background="#F2070707">
+            <Border.Transitions>
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.42"/>
+                </Transitions>
+            </Border.Transitions>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
+                <Border Width="82" Height="82" CornerRadius="41" Background="#FFD400">
+                    <Image Source="/Assets/ymus.png" Width="58" Height="58" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel Spacing="4">
+                    <TextBlock Text="YMus" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Загружаем менеджер расширения" Classes="muted" HorizontalAlignment="Center"/>
+                </StackPanel>
+                <ProgressBar Width="150" Height="3" IsIndeterminate="True" Foreground="#FFD400" Background="#29250C"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

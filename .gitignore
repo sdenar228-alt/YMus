@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+YMus/
+YMus — копия/
+*.zip
+*.rar
+*.crx
+*.pem
+*.exe
+
+# Local secrets — never commit
+keys.json
+API-key.txt
+us_bank_na_us_bins_united_states.txt
+
+# Kiro / editor workspace (не публикуем)
+.kiro/
+
+# Локальные рабочие папки и черновики
+MIDI FL/
+YMusic/
+
+# Серверная и сайтовая части — не публикуем
+YMusProg/Server/
+YMusProg/Site/
+
+# Скриншоты/проверочные картинки в корне
+qtapp_*.png
+YMusUpd.png
+
+# Python build artifacts (PyInstaller / Nuitka)
+__pycache__/
+*.pyc
+**/build/
+**/build_setup/
+**/dist/
+**/dist_nuitka/
+payload.zip
+*.spec
+
+# Rust / Tauri build output
+**/target/
+**/target-install-modes/
+
+# .NET build output
+**/bin/
+**/obj/
+**/publish/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Playwright debug artifacts
+.playwright-mcp/
+
+# Logs
+*.log
+
+# Jest
+coverage/

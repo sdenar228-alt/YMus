@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Yandex Music Downloader</title>
+    <style>
+      /* ─── Yandex Music inspired theme ─────────────────────────────────────
+         Палитра:
+           --bg-base       #000000     основной фон попапа
+           --bg-card       #1d1d1f     карточки/секции
+           --bg-elevated   #2a2a2c     поля ввода, кнопки-секондари
+           --bg-hover      #353537     ховер фон
+           --accent        #ffdb4d     жёлтый Я.Музыки
+           --accent-hover  #ffe680     светлее на ховере
+           --text-primary  #ffffff
+           --text-muted    #a8a8aa
+           --text-dim      #6e6e73
+           --border        rgba(255, 255, 255, 0.08)
+           --success       #5dd57f
+           --error         #ff6961
+           --info          #6bb6ff
+      */
+
+      :root {
+        --bg-base: #000000;
+        --bg-card: #1d1d1f;
+        --bg-elevated: #2a2a2c;
+        --bg-hover: #353537;
+        --accent: #ffdb4d;
+        --accent-hover: #ffe680;
+        --text-primary: #ffffff;
+        --text-muted: #a8a8aa;
+        --text-dim: #6e6e73;
+        --border: rgba(255, 255, 255, 0.08);
+        --border-strong: rgba(255, 255, 255, 0.16);
+        --success: #5dd57f;
+        --error: #ff6961;
+        --info: #6bb6ff;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.25);
+        --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body { margin: 0; padding: 0; }
+
+      body {
+        font-family: "YS Text", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+        font-size: 13px;
+        color: var(--text-primary);
+        background: var(--bg-base);
+        padding: 0;
+        width: 360px;
+        line-height: 1.4;
+        -webkit-font-smoothing: antialiased;
+        animation: popup-fade-in 220ms var(--ease);
+        display: flex;
+        flex-direction: column;
+        max-height: 600px;
+      }
+
+      /* ─── Animations ───────────────────────────────────────────────────── */
+      @keyframes popup-fade-in {
+        from { opacity: 0; transform: translateY(-4px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes section-rise {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes status-slide {
+        from { opacity: 0; max-height: 0; transform: translateY(-4px); }
+        to   { opacity: 1; max-height: 200px; transform: translateY(0); }
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      @keyframes pulse-accent {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(255, 219, 77, 0.4); }
+        50%      { box-shadow: 0 0 0 6px rgba(255, 219, 77, 0); }
+      }
+
+      .section { animation: section-rise 280ms var(--ease) backwards; }
+      .section:nth-child(1) { animation-delay: 40ms; }
+      .section:nth-child(2) { animation-delay: 80ms; }
+      .section:nth-child(3) { animation-delay: 120ms; }
+      .section:nth-child(4) { animation-delay: 160ms; }
+      .section:nth-child(5) { animation-delay: 200ms; }
+
+      /* ─── Header ───────────────────────────────────────────────────────── */
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .header__logo {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: transform 200ms var(--ease);
+      }
+      .header__logo:hover { transform: scale(1.06) rotate(-3deg); }
+      .header__logo svg { display: block; }
+      .header__title {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .header__subtitle {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 1px;
+      }
+
+      /* ─── Common labels ────────────────────────────────────────────────── */
+      label {
+        display: block;
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-bottom: 5px;
+        font-weight: 500;
+      }
+
+      /* ─── Inputs ───────────────────────────────────────────────────────── */
+      input[type="text"] {
+        width: 100%;
+        padding: 9px 11px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 13px;
+        font-family: inherit;
+        background: var(--bg-elevated);
+        color: var(--text-primary);
+        outline: none;
+        transition: border-color 150ms var(--ease), background 150ms var(--ease);
+      }
+      input[type="text"]::placeholder { color: var(--text-dim); }
+      input[type="text"]:hover { background: var(--bg-hover); }
+      input[type="text"]:focus {
+        border-color: var(--accent);
+        background: var(--bg-hover);
+      }
+
+      /* ─── Buttons ──────────────────────────────────────────────────────── */
+      button {
+        width: 100%;
+        padding: 10px 14px;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 13px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: background 150ms var(--ease), transform 100ms var(--ease), box-shadow 200ms var(--ease);
+      }
+      button:active:not(:disabled) { transform: scale(0.98); }
+      button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+      .btn-primary {
+        background: var(--accent);
+        color: #000;
+        margin-top: 10px;
+        position: relative;
+      }
+      .btn-primary:hover:not(:disabled) {
+        background: var(--accent-hover);
+        box-shadow: 0 4px 14px rgba(255, 219, 77, 0.3);
+      }
+      .btn-primary.loading {
+        animation: pulse-accent 1.4s ease-in-out infinite;
+      }
+      .btn-primary.loading::before {
+        content: "";
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid rgba(0, 0, 0, 0.25);
+        border-top-color: #000;
+        border-radius: 50%;
+        margin-right: 8px;
+        vertical-align: -2px;
+        animation: spin 800ms linear infinite;
+      }
+
+      .btn-secondary {
+        background: var(--bg-elevated);
+        color: var(--text-primary);
+        margin-top: 8px;
+        border: 1px solid var(--border);
+      }
+      .btn-secondary:hover:not(:disabled) {
+        background: var(--bg-hover);
+        border-color: var(--border-strong);
+      }
+
+      /* ─── Section card (общий контейнер блоков) ────────────────────────── */
+      .section {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 12px 14px;
+        margin-bottom: 10px;
+        transition: border-color 200ms var(--ease);
+      }
+      .section:hover { border-color: var(--border-strong); }
+
+      /* ─── Auth ─────────────────────────────────────────────────────────── */
+      .auth-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .auth-status {
+        flex: 1;
+        font-size: 12px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .auth-status::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--text-dim);
+        flex-shrink: 0;
+        transition: background 220ms var(--ease), box-shadow 220ms var(--ease);
+      }
+      .auth-status.ok::before {
+        background: var(--success);
+        box-shadow: 0 0 0 3px rgba(93, 213, 127, 0.2);
+      }
+      .auth-status.no::before {
+        background: var(--error);
+        box-shadow: 0 0 0 3px rgba(255, 105, 97, 0.2);
+      }
+      .auth-status.ok { color: var(--text-primary); }
+      .auth-status.no { color: var(--text-muted); }
+
+      .auth-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+        border-radius: var(--radius-sm);
+        background: var(--accent);
+        color: #000;
+        width: auto;
+        flex-shrink: 0;
+      }
+      .auth-btn:hover:not(:disabled) {
+        background: var(--accent-hover);
+      }
+
+      /* ─── Manual token (collapsible) ───────────────────────────────────── */
+      details {
+        margin-top: 10px;
+      }
+      details summary {
+        font-size: 11px;
+        color: var(--text-muted);
+        cursor: pointer;
+        list-style: none;
+        padding: 4px 0;
+        transition: color 150ms var(--ease);
+        user-select: none;
+      }
+      details summary::-webkit-details-marker { display: none; }
+      details summary::before {
+        content: "▸";
+        display: inline-block;
+        margin-right: 6px;
+        font-size: 9px;
+        transition: transform 200ms var(--ease);
+      }
+      details[open] summary::before { transform: rotate(90deg); }
+      details summary:hover { color: var(--accent); }
+
+      .manual-token {
+        margin-top: 8px;
+        animation: section-rise 220ms var(--ease);
+      }
+      .manual-token input {
+        font-size: 12px;
+        padding: 7px 10px;
+      }
+      .manual-token button {
+        margin-top: 7px;
+        padding: 7px 12px;
+        font-size: 11px;
+        background: var(--bg-elevated);
+        color: var(--text-primary);
+        border: 1px solid var(--border);
+        width: auto;
+      }
+      .manual-token button:hover:not(:disabled) {
+        background: var(--bg-hover);
+      }
+
+      /* ─── Format selectors ─────────────────────────────────────────────── */
+      .format-section .format-row + .format-row { margin-top: 10px; }
+      .format-section select {
+        width: 100%;
+        padding: 9px 32px 9px 11px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--bg-elevated);
+        color: var(--text-primary);
+        font-size: 13px;
+        font-family: inherit;
+        font-weight: 500;
+        outline: none;
+        cursor: pointer;
+        transition: background 150ms var(--ease), border-color 150ms var(--ease);
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23ffdb4d' d='M0 0l5 6 5-6z'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+      }
+      .format-section select:hover {
+        background-color: var(--bg-hover);
+        border-color: var(--border-strong);
+      }
+      .format-section select:focus { border-color: var(--accent); }
+
+      /* ─── Status ───────────────────────────────────────────────────────── */
+      .status {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: var(--radius-sm);
+        font-size: 12px;
+        line-height: 1.45;
+        display: none;
+        border: 1px solid transparent;
+        overflow: hidden;
+      }
+      .status.info,
+      .status.success,
+      .status.error {
+        display: block;
+        animation: status-slide 240ms var(--ease);
+      }
+      .status.info {
+        background: rgba(107, 182, 255, 0.08);
+        color: var(--info);
+        border-color: rgba(107, 182, 255, 0.18);
+      }
+      .status.success {
+        background: rgba(93, 213, 127, 0.08);
+        color: var(--success);
+        border-color: rgba(93, 213, 127, 0.18);
+      }
+      .status.error {
+        background: rgba(255, 105, 97, 0.08);
+        color: var(--error);
+        border-color: rgba(255, 105, 97, 0.18);
+      }
+
+      /* ─── Hint ─────────────────────────────────────────────────────────── */
+      .hint {
+        margin-top: 12px;
+        padding: 10px 12px;
+        font-size: 11px;
+        color: var(--text-muted);
+        line-height: 1.5;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+      }
+
+      /* ─── Banners (телеграм, донат) ────────────────────────────────────── */
+      .banner {
+        margin-top: 8px;
+        padding: 12px 14px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        font-size: 12px;
+        line-height: 1.45;
+        color: var(--text-primary);
+        transition: border-color 200ms var(--ease), transform 200ms var(--ease);
+      }
+      .banner:hover {
+        border-color: var(--border-strong);
+        transform: translateY(-1px);
+      }
+      .banner__text {
+        color: var(--text-muted);
+        margin-bottom: 8px;
+      }
+      .banner a {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+        padding: 4px 0;
+        transition: color 150ms var(--ease);
+      }
+      .banner a:hover { color: var(--accent-hover); }
+      .banner a svg { flex-shrink: 0; transition: transform 200ms var(--ease); }
+      .banner a:hover svg { transform: translateX(2px); }
+
+      .tg-banner a { color: #6bb6ff; }
+      .tg-banner a:hover { color: #8cc6ff; }
+      .donate-banner a { color: #ff8a4d; }
+      .donate-banner a:hover { color: #ffa570; }
+
+      /* ─── Legal info ───────────────────────────────────────────────────── */
+      .legal-info {
+        margin-top: 14px;
+        padding: 12px 14px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        font-size: 10px;
+        line-height: 1.5;
+        color: var(--text-dim);
+      }
+      .legal-info__title {
+        font-weight: 600;
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+      }
+      .legal-info__date {
+        font-size: 9px;
+        color: var(--text-dim);
+        margin-bottom: 8px;
+      }
+      .legal-info__content p {
+        margin: 0 0 5px;
+      }
+      .legal-info__contact {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid var(--border);
+        font-size: 10px;
+        color: var(--text-muted);
+      }
+      .legal-info__contact a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      .legal-info__contact a:hover { text-decoration: underline; }
+
+      /* ─── Tab Bar ────────────────────────────────────────────────────────── */
+      .tab-bar {
+        display: flex;
+        gap: 0;
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+      }
+      .tab-bar button {
+        flex: 1;
+        padding: 10px 4px;
+        font-size: 11px;
+        font-weight: 600;
+        font-family: inherit;
+        border: none;
+        border-bottom: 2px solid transparent;
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: color 150ms var(--ease), border-color 150ms var(--ease), background 150ms var(--ease);
+        width: auto;
+      }
+      .tab-bar button:hover {
+        color: var(--text-primary);
+        background: var(--bg-elevated);
+      }
+      .tab-bar button.active {
+        color: var(--text-primary);
+        border-bottom-color: var(--accent);
+      }
+
+      /* ─── Tab Panels ───────────────────────────────────────────────────── */
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      /* ─── Tab content area (scrollable) ─────────────────────────────────── */
+      .tab-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+      }
+
+      /* ─── Placeholder (coming soon) ────────────────────────────────────── */
+      .placeholder-message {
+        margin-top: 12px;
+        padding: 10px 12px;
+        font-size: 11px;
+        color: var(--text-muted);
+        line-height: 1.5;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+      }
+
+      /* ─── Transcode warning ──────────────────────────────────────────────── */
+      .transcode-warning {
+        margin-top: 10px;
+        padding: 8px 10px;
+        font-size: 11px;
+        line-height: 1.45;
+        color: #b89a3a;
+        background: rgba(255, 219, 77, 0.08);
+        border: 1px solid rgba(255, 219, 77, 0.18);
+        border-radius: var(--radius-sm);
+      }
+
+      /* ─── Scrollbar (тонкий, чтобы не ломал стиль) ─────────────────────── */
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb {
+        background: var(--bg-elevated);
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover { background: var(--bg-hover); }
+    </style>
+  </head>
+  <body>
+    <nav class="tab-bar">
+      <button data-tab="yandex-music" class="active">Яндекс</button>
+      <button data-tab="vk">VK</button>
+      <button data-tab="youtube">YouTube</button>
+      <button data-tab="spotify">Spotify</button>
+    </nav>
+
+    <div class="tab-content">
+      <!-- Yandex Music Panel -->
+      <div class="tab-panel active" data-tab="yandex-music">
+        <div class="header">
+          <div class="header__logo" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 18V6l9 6-9 6z" fill="#000"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="header__title">YMus Downloader</h3>
+            <div class="header__subtitle">Яндекс Музыка → MP3 / FLAC / WAV</div>
+          </div>
+        </div>
+
+        <div class="section auth-section">
+          <div class="auth-row">
+            <div id="auth-status" class="auth-status">Проверяю…</div>
+            <button id="auth-btn" class="auth-btn">Подключить</button>
+          </div>
+          <details>
+            <summary>Не сработало автоматически? Вставить токен вручную</summary>
+            <div class="manual-token">
+              <label for="manual-token-input">OAuth-токен (access_token из URL)</label>
+              <input id="manual-token-input" type="text" placeholder="y0_AgAAAA…" />
+              <button id="manual-token-save">Сохранить токен</button>
+            </div>
+          </details>
+        </div>
+
+        <div class="section format-section">
+          <div class="format-row">
+            <label for="format-single">Формат для одного трека</label>
+            <select id="format-single">
+              <option value="mp3">MP3</option>
+              <option value="flac">FLAC</option>
+              <option value="wav">WAV</option>
+            </select>
+          </div>
+          <div class="format-row">
+            <label for="format-bulk">Формат для плейлиста</label>
+            <select id="format-bulk">
+              <option value="mp3">MP3</option>
+              <option value="flac">FLAC</option>
+              <option value="wav">WAV</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="section">
+          <label for="input">Ссылка на трек или его ID</label>
+          <input
+            id="input"
+            type="text"
+            placeholder="https://music.yandex.ru/album/…/track/…"
+            autofocus
+          />
+          <button id="download" class="btn-primary">Скачать</button>
+          <button id="paste-current" class="btn-secondary">Вставить URL текущей вкладки</button>
+          <div id="status" class="status"></div>
+        </div>
+
+        <div class="hint">
+          Подключение аккаунта полностью безопасно. OAuth-токен Яндекса хранится локально в вашем браузере и используется только для запросов к API Яндекс Музыки. При отключении аккаунта или удалении расширения токен удаляется.
+        </div>
+
+        <div class="banner tg-banner">
+          <div class="banner__text">Подписывайтесь, чтобы следить за актуальными версиями расширения:</div>
+          <a id="tg-link" href="https://t.me/YMusLink" target="_blank" rel="noopener noreferrer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
+            </svg>
+            Telegram-канал
+          </a>
+        </div>
+
+        <div class="banner donate-banner">
+          <div class="banner__text">Если расширение оказалось полезным — буду рад поддержке:</div>
+          <a id="donate-link" href="https://pressf.com/allergicheskii_rinit/donate" target="_blank" rel="noopener noreferrer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            Поддержать автора
+          </a>
+        </div>
+
+        <div id="legal-yandex-music" class="legal-container"></div>
+      </div>
+
+      <!-- VK Panel -->
+      <div class="tab-panel" data-tab="vk">
+        <div class="section format-section">
+          <div class="format-row">
+            <label for="vk-format-single">Формат для одного трека</label>
+            <select id="vk-format-single">
+              <option value="mp3">MP3</option>
+              <option value="flac">FLAC</option>
+              <option value="wav">WAV</option>
+            </select>
+          </div>
+          <div class="format-row">
+            <label for="vk-format-bulk">Формат для плейлиста</label>
+            <select id="vk-format-bulk">
+              <option value="mp3">MP3</option>
+              <option value="flac">FLAC</option>
+              <option value="wav">WAV</option>
+            </select>
+          </div>
+          <div id="vk-transcode-warning" class="transcode-warning" style="display: none;">
+        </div>
+        </div>
+
+        <div id="legal-vk" class="legal-container"></div>
+      </div>
+
+      <!-- YouTube Panel -->
+      <div class="tab-panel" data-tab="youtube">
+        <div class="section format-section">
+          <div class="format-row">
+            <label for="yt-quality">YouTube качество:</label>
+            <select id="yt-quality">
+              <option value="480p">480p</option>
+              <option value="720p">720p</option>
+              <option value="1080p" selected>1080p</option>
+              <option value="2K">2K (1440p)</option>
+              <option value="4K">4K (2160p)</option>
+            </select>
+          </div>
+          <div class="format-row">
+            <label for="yt-download-mode">Режим скачивания</label>
+            <select id="yt-download-mode">
+              <option value="video">Video</option>
+              <option value="audio-only">Audio only</option>
+              <option value="video-audio">Video + Audio</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="placeholder-message">
+          ⏳ Функция скачивания из YouTube пока недоступна. Следите за обновлениями в Telegram-канале.
+        </div>
+
+        <div id="legal-youtube" class="legal-container"></div>
+      </div>
+
+      <!-- Spotify Panel -->
+      <div class="tab-panel" data-tab="spotify">
+        <div class="section format-section">
+          <div class="format-row">
+            <label for="spotify-format-single">Формат для одного трека</label>
+            <select id="spotify-format-single">
+              <option value="mp3">MP3</option>
+              <option value="flac">FLAC</option>
+              <option value="wav">WAV</option>
+            </select>
+          </div>
+          <div class="format-row">
+            <label for="spotify-format-bulk">Формат для плейлиста</label>
+            <select id="spotify-format-bulk">
+              <option value="mp3">MP3</option>
+              <option value="flac">FLAC</option>
+              <option value="wav">WAV</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="placeholder-message">
+          ⏳ Функция скачивания из Spotify пока недоступна. Следите за обновлениями в Telegram-канале.
+        </div>
+
+        <div id="legal-spotify" class="legal-container"></div>
+      </div>
+    </div>
+
+    <script src="popup.js" type="module"></script>
+  </body>
+</html>

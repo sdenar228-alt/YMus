@@ -1,0 +1,112 @@
+{
+  "manifest_version": 3,
+  "name": "YMus",
+  "version": "1.1.2",
+  "description": "Скачивание треков с Яндекс Музыки прямо из браузера",
+  "icons": {
+    "16": "icons/Icon16x16.png",
+    "48": "icons/Icon48x48.png",
+    "128": "icons/Icon128x128.png"
+  },
+  "permissions": [
+    "downloads",
+    "cookies",
+    "storage",
+    "tabs",
+    "identity",
+    "offscreen",
+    "scripting",
+    "management",
+    "webRequest",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://music.yandex.ru/*",
+    "https://*.music.yandex.ru/*",
+    "https://music.yandex.com/*",
+    "https://*.music.yandex.com/*",
+    "https://api.music.yandex.ru/*",
+    "https://api.music.yandex.net/*",
+    "https://*.mds.yandex.net/*",
+    "https://*.music.yandex.net/*",
+    "https://*.strm.yandex.net/*",
+    "https://oauth.yandex.ru/*",
+    "https://vk.com/*",
+    "https://*.vk.com/*",
+    "https://*.vkuseraudio.net/*",
+    "https://*.userapi.com/*",
+    "https://www.youtube.com/*",
+    "https://youtube.com/*",
+    "https://*.googlevideo.com/*",
+    "https://open.spotify.com/*",
+    "https://*.spotify.com/*",
+    "https://*.scdn.co/*",
+    "https://*.spotifycdn.com/*",
+    "https://ymus.tech/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/Icon16x16.png",
+      "48": "icons/Icon48x48.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://music.yandex.ru/*", "https://music.yandex.com/*"],
+      "js": ["ym-page-bridge.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["https://music.yandex.ru/*", "https://music.yandex.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://vk.com/*"],
+      "js": ["vk-content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://vk.com/*"],
+      "js": ["vk-page-bridge.js"],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["https://www.youtube.com/watch*", "https://www.youtube.com/shorts/*"],
+      "js": ["yt-page-bridge.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["https://www.youtube.com/watch*", "https://www.youtube.com/shorts/*"],
+      "js": ["yt-content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://open.spotify.com/*"],
+      "js": ["spotify-content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "ffmpeg-core.js",
+        "ffmpeg-core.wasm",
+        "ffmpeg-worker.js",
+        "youtubei.js"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
