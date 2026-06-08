@@ -227,6 +227,17 @@ class Backend(QObject):
     def extLatestVersion(self) -> str:
         return self._ext_latest
 
+    @Property(bool, constant=True)
+    def accessibilityNeeded(self) -> bool:
+        # На Windows системное разрешение не нужно — плашка не показывается.
+        return False
+
+    @Slot()
+    def open_accessibility_settings(self) -> None:
+        # На Windows не используется (плашка скрыта). Оставлено для совместимости
+        # с общим QML, где кнопка есть только на macOS.
+        pass
+
     @Property(str, notify=preparedPathChanged)
     def preparedPath(self) -> str:
         return self._prepared_path or r"C:\Users\...\AppData\Local\YMus\extensions\chromium\current"

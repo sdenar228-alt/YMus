@@ -93,6 +93,7 @@ class Backend(QObject):
     settingsChanged = Signal()
     ready = Signal()
     updateInfoChanged = Signal()
+    accessibilityChanged = Signal()
 
     def __init__(self) -> None:
         super().__init__()
@@ -105,6 +106,7 @@ class Backend(QObject):
         self._ext_update_available = False
         self._ext_latest = ""
         self._ext_update_type = "simple"
+        self._accessibility_needed = True
         self.add_log("ИНФО", "YMus (macOS) запущен")
         _device_id = machine_hwid()
         if _device_id:
@@ -118,6 +120,27 @@ class Backend(QObject):
         finally:
             self.ready.emit()
         threading.Thread(target=self._check_extension_update, daemon=True).start()
+        threading.Thread(target=self._update_accessibility, daemon=True).start()
+        # Периодически перепроверяем разрешение, чтобы плашка спряталась сразу
+        # после того, как пользователь включит «Универсальный доступ».
+        self._access_timer = QTimer(self)
+        self._access_timer.setInterval(4000)
+        self._access_timer.timeout.connect(
+            lambda: threading.Thread(target=self._update_accessibility, daemon=True).start()
+        )
+        self._access_timer.start()
+
+    def _update_accessibility(self) -> None:
+        needed = not mac_automation.has_accessibility_permission()
+        if needed != self._accessibility_needed:
+            self._accessibility_needed = needed
+            self.accessibilityChanged.emit()
+        # Когда разрешение выдано — больше не дёргаем проверку.
+        if not needed and hasattr(self, "_access_timer"):
+            try:
+                self._access_timer.stop()
+            except Exception:
+                pass
 
     def _check_extension_update(self) -> None:
         installed = installed_extension_version()
@@ -225,6 +248,29 @@ class Backend(QObject):
     @Property(str, notify=updateInfoChanged)
     def extLatestVersion(self) -> str:
         return self._ext_latest
+
+    @Property(bool, notify=accessibilityChanged)
+    def accessibilityNeeded(self) -> bool:
+        return self._accessibility_needed
+
+    @Slot()
+    def open_accessibility_settings(self) -> None:
+        """Открывает Системные настройки → Конфиденциальность → Универсальный
+        доступ, где включается YMus."""
+        try:
+            subprocess.Popen(
+                ["open", "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"],
+                close_fds=True,
+            )
+            self._set_status(
+                "Открыты настройки доступа",
+                "ИНФО",
+                "Включите YMus в списке «Универсальный доступ» и вернитесь в программу.",
+            )
+        except Exception as error:
+            self.add_log("ОШИБКА", f"Не удалось открыть настройки: {error}")
+        # Перепроверяем разрешение чуть позже.
+        threading.Timer(3.0, lambda: self._update_accessibility()).start()
 
     @Property(str, notify=preparedPathChanged)
     def preparedPath(self) -> str:

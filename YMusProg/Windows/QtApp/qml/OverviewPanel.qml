@@ -41,6 +41,64 @@ Rectangle {
             Item { Layout.preferredWidth: 1 }
         }
 
+        // Плашка-подсказка про разрешение «Универсальный доступ» (macOS).
+        // На Windows показывается для предпросмотра (backend.accessibilityNeeded).
+        Rectangle {
+            visible: backend.accessibilityNeeded
+            Layout.fillWidth: true
+            Layout.preferredHeight: 70
+            radius: 12
+            color: root.lightTheme ? "#fff8e0" : "#171204"
+            border.color: "#88ffd400"
+            border.width: 1
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: 16
+                anchors.rightMargin: 12
+                spacing: 14
+
+                Rectangle {
+                    Layout.preferredWidth: 38
+                    Layout.preferredHeight: 38
+                    radius: 11
+                    color: "#33ffd400"
+                    Text {
+                        anchors.centerIn: parent
+                        text: "!"
+                        color: "#ffd400"
+                        font.pixelSize: 22
+                        font.bold: true
+                    }
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 2
+                    Text {
+                        text: "Нужно разрешение «Универсальный доступ»"
+                        color: root.lightTheme ? "#16140b" : "#f5f2e9"
+                        font.pixelSize: 14
+                        font.bold: true
+                        elide: Text.ElideRight
+                        Layout.fillWidth: true
+                    }
+                    Text {
+                        text: "Чтобы YMus сам устанавливал расширение, включите его в настройках доступа."
+                        color: root.lightTheme ? "#5b563d" : "#a8a8a8"
+                        font.pixelSize: 12
+                        elide: Text.ElideRight
+                        Layout.fillWidth: true
+                    }
+                }
+
+                PrimaryButton {
+                    text: "Открыть настройки"
+                    onClicked: backend.open_accessibility_settings()
+                }
+            }
+        }
+
         Rectangle {
             visible: backend.extUpdateAvailable
             Layout.fillWidth: true
