@@ -66,7 +66,16 @@ jobs:
             "YMusProg/MacOS/QtApp/main.py"
           test -d "dist/YMus.app" || (echo ".app not produced" && exit 1)
 
-      # ── 5. Упаковка в .dmg ──
+      # ── 5. Ad-hoc подпись .app (бесплатно, без Apple Developer) ──
+      - name: Ad-hoc codesign .app
+        run: |
+          # Подписываем вложенные бинарники и бандл прочерком (--sign -).
+          # Не убирает Gatekeeper (нужен «правый клик → Открыть»), но
+          # стабилизирует запуск Qt/PyInstaller-сборки на Apple Silicon.
+          codesign --force --deep --sign - "dist/YMus.app"
+          codesign --verify --deep --strict --verbose=2 "dist/YMus.app"
+
+      # ── 6. Упаковка в .dmg ──
       - name: Make .dmg
         run: |
           mkdir -p dmgroot
@@ -74,7 +83,7 @@ jobs:
           ln -s /Applications dmgroot/Applications
           hdiutil create -volname "YMus" -srcfolder dmgroot -ov -format UDZO "YMus.dmg"
 
-      # ── 6. Публикация артефакта ──
+      # ── 7. Публикация артефакта ──
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:

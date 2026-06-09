@@ -34,6 +34,13 @@ pyinstaller --noconfirm --windowed --name YMus \
   --osx-bundle-identifier "tech.ymus.app" \
   "YMusProg/MacOS/QtApp/main.py"
 
+echo "==> Ad-hoc подпись .app (бесплатно, без Apple Developer)"
+# Подписываем все вложенные бинарники и сам бандл прочерком (--sign -).
+# Это НЕ убирает предупреждение Gatekeeper (нужен «правый клик → Открыть»),
+# но стабилизирует запуск Qt/PyInstaller-сборки на Apple Silicon.
+codesign --force --deep --sign - "dist/YMus.app"
+codesign --verify --deep --strict --verbose=2 "dist/YMus.app"
+
 echo "==> Упаковка .dmg"
 rm -rf dmgroot YMus.dmg
 mkdir -p dmgroot
